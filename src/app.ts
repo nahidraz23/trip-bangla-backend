@@ -1,11 +1,22 @@
-import express, { Request, Response } from 'express';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import express, { Request, Response } from "express";
+import cors from "cors";
+import { router } from "./app/routes";
+import { globalErrorHandler } from "./app/middlewares/globaErrorHandler";
 
-const app = express()
+const app = express();
 
-app.get('/', (req: Request, res: Response) => {
+app.use(express.json());
+app.use(cors());
+
+app.use("/api/v1", router);
+
+app.get("/", (req: Request, res: Response) => {
     res.status(200).json({
-        message: "Welcome to Trip Bangla Backend"
-    })
-})
+        message: "Welcome to Trip Bangla Backend",
+    });
+});
+
+app.use(globalErrorHandler);
 
 export default app;

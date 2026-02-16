@@ -1,0 +1,6 @@
+steps: 
+1. route matching 
+2. controller
+3. service
+4. model
+5. db
