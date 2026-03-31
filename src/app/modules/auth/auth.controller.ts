@@ -17,7 +17,6 @@ const credentialsLogin = catchAsync(async(req: Request, res: Response, next: Nex
     })
 });
 
-
 export const AuthControllers = {
     credentialsLogin
 }
