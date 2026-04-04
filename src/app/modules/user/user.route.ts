@@ -1,9 +1,8 @@
-import { NextFunction, Request, Response, Router } from "express";
+import { Router } from "express";
 import { UserControllers } from "./user.controller";
 import { createUserZodSchema } from "./user.validation";
 import { validateRequest } from "../../middlewares/validateRequest";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import AppError from "../../errorHelpers/AppError";
+import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "./user.interface";
 
 const router = Router();
@@ -13,28 +12,6 @@ router.post(
     validateRequest(createUserZodSchema),
     UserControllers.createUser,
 );
-router.get(
-    "/all-users",
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const accessToken = req.headers.authorization;
-
-            if (!accessToken) {
-                throw new AppError(403, "No token received");
-            }
-
-            const verifiedToken = jwt.verify(accessToken, "secret");
-
-            if((verifiedToken as JwtPayload).role !== Role.ADMIN || Role.SUPER_ADMIN) {
-                throw new AppError(403, "You are not permitted to view this route");
-            }
-
-            next()
-        } catch (error) {
-            next(error)
-        }
-    },
-    UserControllers.getAllUsers,
-);
+router.get("/all-users", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), UserControllers.getAllUsers);
 
 export const UserRoutes = router;
